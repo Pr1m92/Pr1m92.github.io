@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>ОтдыхГрант — служба выдачи разрешений на покой</title>
+  <meta name="description" content="Официальный портал согласования отдыха. Подайте заявку и получите разрешение на законный покой." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600&display=swap" rel="stylesheet" />
+  <script>
+    (function () {
+      var REDIRECT_FLAG = "__otdyh_cache_bust";
+
+      // 1) Каждый заход — новый параметр в URL, чтобы HTML не брался из кэша
+      if (sessionStorage.getItem(REDIRECT_FLAG) !== "1") {
+        sessionStorage.setItem(REDIRECT_FLAG, "1");
+        var url = new URL(window.location.href);
+        url.searchParams.set("_", String(Date.now()));
+        window.location.replace(url.toString());
+        return;
+      }
+      sessionStorage.removeItem(REDIRECT_FLAG);
+
+      // 2) CSS/JS тоже всегда со свежим параметром
+      var v = Date.now();
+      window.__ASSET_V = v;
+      document.write('<link rel="stylesheet" href="styles.css?v=' + v + '">');
+
+      // 3) Чистим Cache Storage и service worker'ы, если есть
+      if ("caches" in window) {
+        caches.keys().then(function (keys) {
+          keys.forEach(function (key) { caches.delete(key); });
+        });
+      }
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (regs) {
+          regs.forEach(function (reg) { reg.unregister(); });
+        });
+      }
+
+      // 4) Если страница взята из back-forward cache — перезагрузить
+      window.addEventListener("pageshow", function (event) {
+        if (event.persisted) window.location.reload();
+      });
+    })();
+  </script>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+
+  <!-- INTRO -->
+  <section id="intro" class="screen active">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">ОтдыхГрант</span>
+        <span class="brand-badge">Official</span>
+      </div>
+      <span class="topbar-meta">Единый портал согласования отдыха · v1.0</span>
+    </header>
+
+    <div class="intro-layout">
+      <div class="intro-copy">
+        <p class="eyebrow">Государственно-дружелюбная процедура · 2026</p>
+        <h1>Официальное разрешение<br />на заслуженный отдых</h1>
+        <p class="lead">
+          Подайте заявку через стандартизированный опрос.
+          Комиссия проверит стаж усталости, готовность к паузе
+          и выдаст документ, после которого работать «ещё чуть-чуть» уже нельзя.
+        </p>
+        <ul class="trust-list">
+          <li>8 пунктов согласования</li>
+          <li>Без чувства вины в комплекте</li>
+          <li>Решение за 3–4 минуты</li>
+        </ul>
+        <button type="button" class="btn btn-primary" id="start-btn">
+          Подать заявку на отдых
+          <span class="btn-arrow" aria-hidden="true">→</span>
+        </button>
+        <p class="fine-print">Данные используются только для выдачи разрешения в этой сессии.</p>
+      </div>
+      <aside class="intro-panel" aria-hidden="true">
+        <div class="panel-card">
+          <div class="panel-header">
+            <span>Статус заявки</span>
+            <span class="status-dot">ожидание</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Индекс усталости</span>
+            <span class="metric-value">—</span>
+          </div>
+          <div class="bars">
+            <div class="bar"><span style="--w:88%"></span><em>Потребность в тишине</em></div>
+            <div class="bar"><span style="--w:74%"></span><em>Готовность отпустить работу</em></div>
+            <div class="bar"><span style="--w:91%"></span><em>Право на сон</em></div>
+            <div class="bar"><span style="--w:67%"></span><em>Смена сферы</em></div>
+          </div>
+          <p class="panel-note">Ожидание входных данных заявителя…</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="screen">
+    <header class="topbar compact">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">ОтдыхГрант</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span id="step-label">Вопрос 1 из 8</span>
+          <span id="block-label">Блок A · Оценка состояния</span>
+        </div>
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="quiz-shell">
+      <article class="question-card" id="question-card">
+        <p class="q-kicker" id="q-kicker">Оценка состояния</p>
+        <h2 id="q-text">Вопрос</h2>
+        <div class="answers" id="answers"></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- CALCULATING -->
+  <section id="calculating" class="screen">
+    <div class="calc-box">
+      <div class="spinner" aria-hidden="true"></div>
+      <h2>Согласовываем разрешение…</h2>
+      <p id="calc-status">Проверяем стаж усталости</p>
+      <ul class="calc-steps" id="calc-steps">
+        <li>Проверка стажа усталости</li>
+        <li>Сверка с регламентом покоя</li>
+        <li>Согласование с Вселенной</li>
+        <li>Подпись разрешения комиссией</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" class="screen">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">ОтдыхГрант</span>
+        <span class="brand-badge">Выдано</span>
+      </div>
+      <span class="topbar-meta">Документ · № OG-<span id="report-id">0000</span></span>
+    </header>
+
+    <div class="result-layout">
+      <div class="result-main certificate">
+        <p class="eyebrow success">Заявка одобрена · разрешение сформировано</p>
+        <h1>Разрешение выдано</h1>
+        <p class="lead result-lead">
+          На основании ответов комиссия подтверждает:
+          <strong>Элечка</strong>, вы официально можете отдыхать.
+          Работа больше не имеет к вам претензий.
+        </p>
+
+        <div class="verdict certificate-seal">
+          <span class="verdict-label">Официальный статус</span>
+          <h2 class="verdict-title">Элечка, можно отдыхать</h2>
+          <p class="verdict-match">Срок действия: <strong>бессрочно</strong></p>
+          <p class="certificate-title-line">Присвоенный титул: <strong>Главный по спокойствию</strong></p>
+        </div>
+
+        <p class="capable">
+          Смена сферы деятельности разрешена. Торопиться не обязательно.
+        </p>
+
+        <div class="result-grid">
+          <div>
+            <h3>Условия отдыха</h3>
+            <ul>
+              <li>Спать сколько хочется</li>
+              <li>Танцевать</li>
+              <li>Читать книжки</li>
+              <li>Готовить и кушать вкусняшки</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Рекомендации комиссии</h3>
+            <ul>
+              <li>Помнить: отдых — не награда, а базовая норма</li>
+              <li>Писать своему другу каждый день</li>
+              <li>Скидывать видео не только танцев, но и всего, что хочется</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="certificate-footer">Подписано Отделом согласования отдыха · действует с момента прочтения</p>
+
+        <button type="button" class="btn btn-primary" id="restart-btn">Подать заявку ещё раз</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      var s = document.createElement("script");
+      s.src = "app.js?v=" + (window.__ASSET_V || Date.now());
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>
