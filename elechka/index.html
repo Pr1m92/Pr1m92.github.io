@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#021018" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="description" content="Тихое место. Не для рыбок — для тебя." />
+  <meta property="og:title" content="Аквариум Элечки" />
+  <meta property="og:description" content="Тихое место. Лови пузыри — внутри слова." />
+  <meta property="og:type" content="website" />
+  <title>Аквариум Элечки</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="glow-cursor" hidden></div>
+
+  <section class="intro" id="intro">
+    <div class="intro__shimmer"></div>
+    <p class="intro__kicker">тихое место</p>
+    <h1 class="intro__title">Элечка</h1>
+    <p class="intro__lead">Это аквариум.<br />Не для рыбок — для тебя.</p>
+    <div class="intro__lesson">
+      <span class="intro__mini" aria-hidden="true"></span>
+      <p>Лови пузыри — внутри слова для тебя.</p>
+    </div>
+    <button class="intro__dive" type="button" id="dive">нырнуть</button>
+  </section>
+
+  <main class="tank" id="tank" aria-label="Аквариум комплиментов">
+    <div class="tank__sky"></div>
+    <div class="tank__caustics"></div>
+    <div class="tank__rays"></div>
+    <div class="tank__dust" id="dust"></div>
+    <div class="tank__surface"></div>
+
+    <svg class="fish fish--far" viewBox="0 0 80 32" aria-hidden="true">
+      <ellipse cx="38" cy="16" rx="22" ry="9" fill="#7ec8c3" opacity=".45" />
+      <path d="M16 16 L2 6 L6 16 L2 26 Z" fill="#5aa8a3" opacity=".4" />
+      <circle cx="52" cy="14" r="1.4" fill="#042018" />
+    </svg>
+    <svg class="fish fish--mid" viewBox="0 0 90 36" aria-hidden="true">
+      <ellipse cx="44" cy="18" rx="26" ry="11" fill="#f0c9a0" opacity=".7" />
+      <path d="M18 18 L2 7 L8 18 L2 29 Z" fill="#e8b48a" opacity=".65" />
+      <circle cx="60" cy="16" r="1.6" fill="#2a1408" />
+      <ellipse cx="38" cy="14" rx="7" ry="3" fill="#fff6e8" opacity=".25" />
+    </svg>
+    <svg class="fish fish--gold" viewBox="0 0 70 28" aria-hidden="true">
+      <ellipse cx="34" cy="14" rx="20" ry="8" fill="#e8d48a" />
+      <path d="M14 14 L1 5 L5 14 L1 23 Z" fill="#d4b45a" />
+      <circle cx="48" cy="12" r="1.3" fill="#2a2208" />
+    </svg>
+    <svg class="fish fish--near" viewBox="0 0 100 40" aria-hidden="true">
+      <ellipse cx="48" cy="20" rx="28" ry="12" fill="#8fd4d0" />
+      <path d="M20 20 L2 8 L8 20 L2 32 Z" fill="#5fb0ac" />
+      <path d="M48 8 Q56 20 48 32" fill="none" stroke="#d8f6f4" stroke-width="1" opacity=".35" />
+      <circle cx="68" cy="17" r="1.8" fill="#041820" />
+      <circle cx="68.6" cy="16.4" r=".5" fill="#fff" />
+    </svg>
+    <div class="fish fish--curious" id="curious" aria-hidden="true">
+      <svg viewBox="0 0 56 24">
+        <ellipse cx="28" cy="12" rx="16" ry="7" fill="#c9a8d8" />
+        <path d="M12 12 L2 5 L5 12 L2 19 Z" fill="#a888c0" />
+        <circle cx="38" cy="10" r="1.2" fill="#1a1020" />
+        <circle cx="38.5" cy="9.6" r=".35" fill="#fff" />
+      </svg>
+    </div>
+
+    <svg class="jelly" id="jelly" viewBox="0 0 120 160" aria-hidden="true">
+      <defs>
+        <radialGradient id="jellyGlow" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="#ffe8c8" stop-opacity=".9" />
+          <stop offset="55%" stop-color="#e8b4d4" stop-opacity=".45" />
+          <stop offset="100%" stop-color="#7aa8c8" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <ellipse cx="60" cy="42" rx="38" ry="28" fill="url(#jellyGlow)" />
+      <path d="M28 48 Q60 72 92 48" fill="none" stroke="#ffe8d0" stroke-width="1.2" opacity=".35" />
+      <path class="jelly__tent" d="M42 68 Q38 110 46 150" />
+      <path class="jelly__tent" d="M54 70 Q60 120 52 156" />
+      <path class="jelly__tent" d="M66 70 Q62 118 70 154" />
+      <path class="jelly__tent" d="M78 68 Q84 112 76 150" />
+    </svg>
+
+    <div class="weeds" aria-hidden="true">
+      <svg class="weed-svg weed-svg--1" viewBox="0 0 48 220"><path d="M24 220 C8 170 36 140 14 88 C32 110 28 48 22 8" /></svg>
+      <svg class="weed-svg weed-svg--2" viewBox="0 0 48 220"><path d="M26 220 C40 168 12 130 34 72 C16 96 22 40 28 0" /></svg>
+      <svg class="weed-svg weed-svg--3" viewBox="0 0 48 180"><path d="M22 180 C10 130 32 100 16 50 C30 68 24 22 20 4" /></svg>
+      <svg class="weed-svg weed-svg--4" viewBox="0 0 48 220"><path d="M20 220 C36 174 8 136 30 78 C12 102 18 44 24 6" /></svg>
+      <svg class="weed-svg weed-svg--5" viewBox="0 0 48 200"><path d="M28 200 C12 150 38 118 18 64 C34 86 30 28 24 2" /></svg>
+      <svg class="weed-svg weed-svg--6" viewBox="0 0 48 140"><path d="M24 140 C14 100 30 72 18 28 C28 44 26 12 22 0" /></svg>
+      <svg class="weed-svg weed-svg--7" viewBox="0 0 48 160"><path d="M22 160 C34 118 10 86 28 40 C16 58 20 16 24 2" /></svg>
+    </div>
+
+    <svg class="rocks" viewBox="0 0 400 80" aria-hidden="true">
+      <ellipse cx="48" cy="62" rx="36" ry="16" fill="#1c1610" />
+      <ellipse cx="70" cy="58" rx="22" ry="14" fill="#2a2218" />
+      <ellipse cx="330" cy="64" rx="40" ry="15" fill="#1a1410" />
+      <ellipse cx="352" cy="60" rx="18" ry="12" fill="#2c241c" />
+    </svg>
+    <svg class="floor-wave" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 28 Q120 8 240 26 T480 22 T720 30 T960 18 T1200 26 L1200 90 L0 90 Z" />
+    </svg>
+    <div class="floor"></div>
+    <div class="bubbles" id="bubbles"></div>
+    <div class="vignette"></div>
+
+    <p class="hint" id="hint">лови пузыри</p>
+
+    <section class="howto" id="howto" hidden>
+      <p class="howto__kicker">коротко</p>
+      <p class="howto__text">Нажми на пузырь.<br />Внутри спрятано слово.</p>
+      <button class="howto__bubble" type="button" id="howtoBubble" aria-label="Поймать пузырь"></button>
+      <p class="howto__hint">вот так</p>
+    </section>
+
+    <aside class="pearls" id="pearls" aria-live="polite">
+      <span class="pearls__label">поймано</span>
+      <strong class="pearls__count" id="count">0</strong>
+      <div class="pearls__row" id="pearlRow"></div>
+    </aside>
+
+    <button class="sound" type="button" id="sound" aria-pressed="false" title="Звук воды">
+      <span aria-hidden="true">◦</span>
+    </button>
+  </main>
+
+  <article class="card" id="card" hidden>
+    <p class="card__mark">из пузыря</p>
+    <p class="card__text" id="cardText"></p>
+    <button class="card__close" type="button" id="cardClose">вернуть воде</button>
+  </article>
+
+  <article class="letter" id="letter" hidden>
+    <p class="letter__from">медуза принесла письмо</p>
+    <div class="letter__body">
+      <p>Элечка.</p>
+      <p>Этот аквариум никуда тебя не зовёт. Он просто держит тебя на свету.</p>
+      <p>Кто-то очень рад, что ты есть. И собрал для тебя воду, рыбок и все эти слова.</p>
+      <p>Дыши. Остальное подождёт.</p>
+    </div>
+    <button class="letter__close" type="button" id="letterClose">остаться в воде</button>
+  </article>
+
+  <script src="app.js"></script>
+</body>
+</html>
