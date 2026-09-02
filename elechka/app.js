@@ -232,6 +232,7 @@ function startTank() {
 }
 
 function showHowto() {
+  tank.classList.add("is-learning");
   howto.hidden = false;
 }
 
@@ -242,6 +243,7 @@ function finishHowto() {
   playPop();
   window.setTimeout(() => {
     howto.hidden = true;
+    tank.classList.remove("is-learning");
   }, 380);
 
   const text = nextCompliment();
