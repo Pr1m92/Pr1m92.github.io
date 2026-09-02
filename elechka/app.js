@@ -42,6 +42,8 @@ const state = {
   paused: false,
   ready: false,
   spawning: false,
+  touch: coarse,
+  blockDismissUntil: 0,
   bubbles: [],
   queue: shuffle([...COMPLIMENTS]),
   caught: 0,
@@ -51,6 +53,38 @@ const state = {
   soundOn: false,
   audio: null,
 };
+
+function markTouch() {
+  state.touch = true;
+  document.documentElement.classList.add("is-touch");
+}
+
+function canDismiss() {
+  return performance.now() >= state.blockDismissUntil;
+}
+
+function armGhostClickBlock() {
+  state.blockDismissUntil = performance.now() + 700;
+  const block = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  document.addEventListener("click", block, true);
+  document.addEventListener("pointerup", block, true);
+  window.setTimeout(() => {
+    document.removeEventListener("click", block, true);
+    document.removeEventListener("pointerup", block, true);
+  }, 700);
+}
+
+function bindTap(element, fn) {
+  element.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    event.preventDefault();
+    event.stopPropagation();
+    fn(event);
+  });
+}
 
 function shuffle(list) {
   for (let i = list.length - 1; i > 0; i -= 1) {
@@ -108,13 +142,7 @@ function spawnBubble(forceGold = false) {
     gold,
   };
 
-  const grab = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    catchBubble(bubble);
-  };
-  button.addEventListener("pointerup", grab);
-  button.addEventListener("click", grab);
+  bindTap(button, () => catchBubble(bubble));
 
   bubblesEl.append(button);
   state.bubbles.push(bubble);
@@ -160,9 +188,11 @@ function showCard(text) {
   state.paused = true;
   cardText.textContent = text;
   card.hidden = false;
+  armGhostClickBlock();
 }
 
 function hideCard() {
+  if (!canDismiss()) return;
   card.hidden = true;
   if (letter.hidden) state.paused = false;
   beginSpawning();
@@ -174,10 +204,12 @@ function showFinale() {
   window.setTimeout(() => {
     state.paused = true;
     letter.hidden = false;
+    armGhostClickBlock();
   }, 2600);
 }
 
 function hideLetter() {
+  if (!canDismiss()) return;
   letter.hidden = true;
   state.paused = false;
 }
@@ -193,7 +225,7 @@ function tick(now) {
       bubble.y -= bubble.speed * (delta / 16);
       bubble.wobble += 0.012 * (delta / 16);
 
-      if (!coarse) {
+      if (!state.touch && !coarse) {
         const dx = (state.pointer.x / innerWidth) * 100 - bubble.x;
         const dy = (state.pointer.y / innerHeight) * 100 - bubble.y;
         const dist = Math.hypot(dx, dy);
@@ -337,25 +369,44 @@ function playPop() {
 }
 
 diveBtn.addEventListener("click", startTank);
-howtoBubble.addEventListener("pointerup", (event) => {
-  event.preventDefault();
-  finishHowto();
+bindTap(howtoBubble, finishHowto);
+bindTap(cardClose, hideCard);
+bindTap(letterClose, hideLetter);
+card.addEventListener("pointerdown", (event) => {
+  if (event.target === card && !state.touch && canDismiss()) hideCard();
 });
-howtoBubble.addEventListener("click", finishHowto);
-cardClose.addEventListener("click", hideCard);
-card.addEventListener("click", (event) => {
-  if (event.target === card) hideCard();
-});
-letterClose.addEventListener("click", hideLetter);
-letter.addEventListener("click", (event) => {
-  if (event.target === letter) hideLetter();
+letter.addEventListener("pointerdown", (event) => {
+  if (event.target === letter && !state.touch && canDismiss()) hideLetter();
 });
 soundBtn.addEventListener("click", () => {
   unlockAudio();
   setSound(!state.soundOn);
 });
+window.addEventListener("touchstart", markTouch, { passive: true });
 window.addEventListener("pointermove", onPointer);
 window.addEventListener("touchmove", onPointer, { passive: true });
+
+tank.addEventListener("pointerdown", (event) => {
+  if (!state.ready || state.paused || card.hidden === false) return;
+  if (event.target.closest("button")) return;
+  const x = event.clientX;
+  const y = event.clientY;
+  let nearest = null;
+  let nearestGap = 28;
+  state.bubbles.forEach((bubble) => {
+    if (bubble.caught) return;
+    const box = bubble.el.getBoundingClientRect();
+    const gap = Math.hypot(x - (box.left + box.width / 2), y - (box.top + box.height / 2)) - box.width / 2;
+    if (gap < nearestGap) {
+      nearestGap = gap;
+      nearest = bubble;
+    }
+  });
+  if (nearest) {
+    event.preventDefault();
+    catchBubble(nearest);
+  }
+});
 window.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     if (!letter.hidden) hideLetter();
